@@ -1,1 +1,40 @@
-../../main/broadcast/miot_args.json
+[{
+    "name" : "HMR300",
+    "fields" : ["HeadingAvg", "Pitch", "Roll", "host", "region"]
+},
+{
+    "name": "KMAWIN",
+    "fields" : ["WindDir3Avg", "WindSpd3Avg", "host", "region"]
+},
+{
+    "name" : "DCS483",
+    "fields" : ["AbsSpd48", "Direction48", "Heading48", "Temperature48", "host", "region"]
+},
+{
+    "name" : "PTB210",
+    "fields" : ["Pressure", "host", "region"]
+},
+{
+    "name" : "AAICTS",
+    "fields" : ["Temp", "Conduct", "Salinity", "host", "region"]
+},
+{
+    "name" : "HMP155",
+    "fields" : ["Rh", "Temp", "host", "region"]
+},
+{
+    "name" : "PWDSEN",
+    "fields" : ["OneMinAvg", "host", "region"]
+},
+{
+    "name" : "AQS",
+    "fields" : ["Pm10Raw", "Pm25Raw", "host", "region"]
+},
+{
+    "name" : "SCS",
+    "fields" : ["Sensor_01_ma",  "Sensor_02_ma", "Sensor_03_ma", "Sensor_04_ma",
+    "Sensor_05_ma", "Sensor_06_ma", "Sensor_07_ma", "Sensor_08_ma", "Sensor_09_ma",
+    "Sensor_10_ma", "Sensor_11_ma", "Sensor_12_ma","host", "region"]
+}
+]
+

@@ -19,7 +19,7 @@ TOPIC = "comm2center/#"
 if MIOT_TEST_MODE == 0 : 
     MQTT_HOST = "106.247.250.251"
     MQTT_PORT = 31883
-    miot_args_json_path = "/broadcast/miot_args.json"
+    miot_args_json_path = "./miot_args.json"
 else : 
     MQTT_HOST = "172.17.0.1"
     MQTT_PORT = 1883

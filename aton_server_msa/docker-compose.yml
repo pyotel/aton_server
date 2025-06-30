@@ -35,7 +35,7 @@ services:
       - ./mosquitto/data:/mosquitto/data
       - ./mosquitto/log:/mosquitto/log
     ports:
-      - 1883:1883
+      - 31883:1883
 
   comm2center:
     restart: unless-stopped
