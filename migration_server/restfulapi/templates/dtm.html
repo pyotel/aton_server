@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location and Measurement Status</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .location {
+            margin: 20px auto;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            max-width: 600px;
+        }
+        .status {
+            display: inline-block;
+            width: 100px;
+            height: 100px;
+            line-height: 100px;
+            margin: 10px;
+            border-radius: 50%;
+            font-size: 16px;
+            text-align: center;
+            color: white;
+            font-weight: bold;
+        }
+        .status.red {
+            background-color: red;
+        }
+        .status.yellow {
+            background-color: yellow;
+            color: black;
+        }
+        .status.green {
+            background-color: green;
+        }
+        .measurements {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .measurement-label {
+            margin-top: 10px;
+            font-size: 14px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Location and Measurement Status</h1>
+
+    {% for loc, measurements in loc_measurements.items() %}
+        <div class="location">
+            <h2>{{ loc }}</h2>
+            <div class="status {% if measurements.overall_status == 2 %}green{% elif measurements.overall_status == 1 %}yellow{% else %}red{% endif %}">
+                Overall
+            </div>
+            <div class="measurements">
+                {% for measurement, has_data in measurements.items() %}
+                    {% if measurement != "overall_status" %}
+                        <div>
+                            <div class="status {% if has_data == 1 %}green{% else %}red{% endif %}">
+                                {{ measurement }}
+                            </div>
+                            <div class="measurement-label">{{ measurement }}</div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
+</body>
+</html>

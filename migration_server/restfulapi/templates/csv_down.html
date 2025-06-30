@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Data</title>
+    <script>
+        async function loadMeasurements() {
+            try {
+                const response = await fetch('/measurements');
+                const measurements = await response.json();
+                const measurementSelect = document.getElementById('measurement');
+
+                measurements.forEach(measurement => {
+                    const option = document.createElement('option');
+                    option.value = measurement;
+                    option.textContent = measurement;
+                    measurementSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading measurements:', error);
+            }
+        }
+
+        window.onload = loadMeasurements;
+    </script>
+</head>
+<body>
+    <h1>Download Measurement Data</h1>
+    <form action="/download-data" method="get">
+        <label for="measurement">Measurement:</label>
+        <select name="measurement" id="measurement" required>
+            <option value="" disabled selected>Select a measurement</option>
+        </select>
+        <br><br>
+        <label for="start_date">Start Date (YYYY-MM-DD):</label>
+        <input type="date" id="start_date" name="start_date" required>
+        <br><br>
+        <label for="end_date">End Date (YYYY-MM-DD):</label>
+        <input type="date" id="end_date" name="end_date" required>
+        <br><br>
+        <button type="submit">Download CSV</button>
+    </form>
+</body>
+</html>

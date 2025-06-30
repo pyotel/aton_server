@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Set Alert</title>
+    <script>
+        async function loadMeasurements() {
+            const response = await fetch('/measurements');
+            const measurements = await response.json();
+            const measurementSelect = document.getElementById('measurement');
+
+            measurements.forEach(measurement => {
+                const option = document.createElement('option');
+                option.value = measurement;
+                option.textContent = measurement;
+                measurementSelect.appendChild(option);
+            });
+        }
+
+        async function loadFields() {
+            const measurement = document.getElementById('measurement').value;
+            const response = await fetch(`/fields?measurement=${measurement}`);
+            const fields = await response.json();
+            const fieldSelect = document.getElementById('field');
+
+            fieldSelect.innerHTML = '<option value="" disabled selected>Select a field</option>';
+            fields.forEach(field => {
+                const option = document.createElement('option');
+                option.value = field;
+                option.textContent = field;
+                fieldSelect.appendChild(option);
+            });
+        }
+
+        window.onload = function() {
+            loadMeasurements();
+            document.getElementById('measurement').addEventListener('change', loadFields);
+        }
+    </script>
+</head>
+<body>
+    <h1>Set Alert</h1>
+    <form action="/set-alert" method="post">
+        <label for="measurement">Measurement:</label>
+        <select name="measurement" id="measurement" required>
+            <option value="" disabled selected>Select a measurement</option>
+        </select>
+        <br><br>
+        <label for="field">Field:</label>
+        <select name="field" id="field" required>
+            <option value="" disabled selected>Select a field</option>
+        </select>
+        <br><br>
+        <label for="condition">Condition:</label>
+        <select name="condition" id="condition" required>
+            <option value="above">Above</option>
+            <option value="below">Below</option>
+        </select>
+        <br><br>
+        <label for="threshold">Threshold:</label>
+        <input type="number" id="threshold" name="threshold" step="0.01" required>
+        <br><br>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+        <br><br>
+        <button type="submit">Set Alert</button>
+    </form>
+</body>
+</html>
