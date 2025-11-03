@@ -1,0 +1,36 @@
+#!/usr/bin/python3
+#-*- encoding: utf-8 -*-
+
+import paho.mqtt.client as mqtt
+import json
+from influxdb import InfluxDBClient
+from influxdb.exceptions import InfluxDBClientError
+import datetime
+import argparse
+import re
+import os
+
+parser = argparse.ArgumentParser(description='')
+parser.add_argument('--local', required=False, help='JETSON에서 테스트로 바로 실행 시킬 때 1 입력', default="0")
+args = parser.parse_args()
+MIOT_TEST_MODE = int(args.local)
+
+TOPIC = "comm2center/#"
+
+# Support environment variables for Docker deployment
+# Priority: Environment variables > Default values
+if MIOT_TEST_MODE == 0:
+    MQTT_HOST = os.getenv('MQTT_HOST', "106.247.250.251")
+    MQTT_PORT = int(os.getenv('MQTT_PORT', "31883"))
+    miot_args_json_path = "./miot_args.json"
+else:
+    # Local test mode - use Docker service names if in container
+    MQTT_HOST = os.getenv('MQTT_HOST', "172.17.0.1")
+    MQTT_PORT = int(os.getenv('MQTT_PORT', "1883"))
+    miot_args_json_path = "./miot_args.json"
+
+INFLUX_HOST = os.getenv('INFLUX_HOST', "106.247.250.251")
+INFLUX_PORT = int(os.getenv('INFLUX_PORT', "31886"))
+
+print(f"[INFO] MQTT Configuration: {MQTT_HOST}:{MQTT_PORT}")
+print(f"[INFO] InfluxDB Configuration: {INFLUX_HOST}:{INFLUX_PORT}")

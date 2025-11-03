@@ -16,15 +16,10 @@ MIOT_TEST_MODE = int(args.local)
 
 TOPIC = "comm2center/#"
 
-if MIOT_TEST_MODE == 0 : 
-    MQTT_HOST = "106.247.250.251"
-    MQTT_PORT = 31883
-    miot_args_json_path = "./miot_args.json"
-else : 
-    MQTT_HOST = "172.17.0.1"
-    MQTT_PORT = 1883
-    miot_args_json_path = "./miot_args.json"
-
+MQTT_HOST = "172.17.0.1"
+MQTT_PORT = 1883
+miot_args_json_path = "./miot_args.json"
+   
 INFLUX_HOST = "106.247.250.251"
 INFLUX_PORT = 31886
 
@@ -39,15 +34,27 @@ def get_field_types(measurement, influxdb_handle):
     return field_types
 
 def cast_to_field_type(field_name, value, field_types):
+    # field_types 딕셔너리에 해당 필드가 있으면, db의 타입에 맞게 변환
     if field_name in field_types:
         field_type = field_types[field_name]
-        cleaned_value = re.sub(r'[^0-9.-]', '', str(value))
-        if cleaned_value:
+        try:
             if field_type == 'float':
-                return float(cleaned_value)
+                return float(value)
             elif field_type == 'integer':
-                return int(cleaned_value)
-        return value
+                return int(float(value))  # int로 변환 전에 float로 한 번 변환(문자열 '1.0' 등 처리)
+            elif field_type == 'boolean':
+                # influxdb boolean은 True/False 또는 1/0으로 저장됨
+                if str(value).lower() in ['true', '1']:
+                    return True
+                elif str(value).lower() in ['false', '0']:
+                    return False
+                else:
+                    return bool(value)
+            else:
+                return value  # string 등 기타 타입은 그대로 반환
+        except Exception as e:
+            # 변환 실패 시 원래 값 반환
+            return value
     else:
         return value
 
@@ -88,12 +95,31 @@ def influxdb_write(dbname, dic_data : dict):
         "loc" : loc,
         "location" : loc,
     }
+    token = dic_data.pop("token", "")
+    if token : dict_tags["token"] = token
+    
     if "container_name" in dic_data : dict_tags["contname"] = dic_data.get("container_name", "none")
+    
+    # BMSSerialNo를 태그로 처리
+    if "BMSSerialNo" in dic_data:
+        dict_tags["BMSSerialNo"] = dic_data.pop("BMSSerialNo")
+    
+    # cam_parsed measurement에 대한 기본 필드 추가
+    if measurement == "cam_vp":
+        default_fields = {
+            "significant_wave_height": 0.0,
+            "average_wave_height": 0.0,
+            "maximum_wave_height": 0.0,
+            "collision": int(0)
+        }
+        for field, default_value in default_fields.items():
+            if field not in dic_data:
+                dic_data[field] = default_value
     
     for field_name in dic_data.keys():
         field_value = cast_to_field_type(field_name, dic_data[field_name], field_types)
         dic_data[field_name] = field_value
-    
+
     json_body = [
         {
             "measurement": measurement,
@@ -101,8 +127,13 @@ def influxdb_write(dbname, dic_data : dict):
             "fields": dic_data
         }
     ]
-    influxdb_handle.write_points(json_body)
- 
+    try:
+        influxdb_handle.write_points(json_body)
+    except Exception as e:
+        print(f"ERROR: InfluxDB에 데이터 쓰기 실패 - {e}")
+
+
+        
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
     client.subscribe(TOPIC)

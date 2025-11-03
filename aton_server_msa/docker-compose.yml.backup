@@ -45,8 +45,9 @@ services:
     depends_on:
       - influxdb
       - mosquitto
-    volumes:
+    volumes: 
       - /etc/localtime:/etc/localtime
+      -  ../main/broadcast/:/broadcast/
 
   restfulapi:
     build:

@@ -1,12 +1,17 @@
 version: '3.0'
 
+# Fixed version for Rocky Linux deployment
+# Changes:
+# 1. Added environment variables for comm2center to use Docker service names
+# 2. Made broadcast volume optional (commented out)
+# 3. Added depends_on for proper startup order
 
 services:
 
   influxdb:
     image: influxdb:1.8
     restart: always
-    volumes: 
+    volumes:
       - ~/influxdb:/var/lib/influxdb
       - ~/influxdb2:/var/lib/influxdb2
       - /etc/localtime:/etc/localtime
@@ -19,6 +24,11 @@ services:
       - INFLUXDB_ADMIN_PASSWORD=${INFLUX_ROOT_PASSWORD}
       - INFLUXDB_HTTP_AUTH_ENABLED=true
       - TZ=Asia/Seoul
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8086/ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   mosquitto:
     restart: always
@@ -36,6 +46,11 @@ services:
       - ./mosquitto/log:/mosquitto/log
     ports:
       - 31883:1883
+    healthcheck:
+      test: ["CMD", "mosquitto_sub", "-t", "$$SYS/#", "-C", "1", "-i", "healthcheck", "-W", "3"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   comm2center:
     restart: unless-stopped
@@ -43,10 +58,21 @@ services:
       context: ./comm2center
       dockerfile: Dockerfile
     depends_on:
-      - influxdb
-      - mosquitto
+      influxdb:
+        condition: service_healthy
+      mosquitto:
+        condition: service_healthy
     volumes:
       - /etc/localtime:/etc/localtime
+      # Optional: Uncomment if you need broadcast directory
+      # - ../main/broadcast/:/broadcast/
+    environment:
+      # These would need to be used in comm2center.py
+      # For now, the code uses hardcoded values or MIOT_TEST_MODE
+      - MQTT_HOST=mosquitto
+      - MQTT_PORT=1883
+      - INFLUX_HOST=influxdb
+      - INFLUX_PORT=8086
 
   restfulapi:
     build:
@@ -55,6 +81,14 @@ services:
     restart: unless-stopped
     ports:
       - "5000:5000"
-    volumes: 
+    volumes:
       - /etc/localtime:/etc/localtime
       - ./restfulapi/img:/app/img/
+    depends_on:
+      - influxdb
+      - mosquitto
+    environment:
+      - INFLUX_HOST=influxdb
+      - INFLUX_PORT=8086
+      - MQTT_HOST=mosquitto
+      - MQTT_PORT=1883
