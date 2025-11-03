@@ -8,6 +8,7 @@ from influxdb.exceptions import InfluxDBClientError
 import datetime
 import argparse
 import re
+import os
 
 parser = argparse.ArgumentParser(description='')
 parser.add_argument('--local', required=False, help='JETSON에서 테스트로 바로 실행 시킬 때 1 입력', default="0")
@@ -20,8 +21,11 @@ MQTT_HOST = "172.17.0.1"
 MQTT_PORT = 1883
 miot_args_json_path = "./miot_args.json"
    
-INFLUX_HOST = "106.247.250.251"
-INFLUX_PORT = 31886
+INFLUX_HOST = os.getenv('INFLUX_HOST', "106.247.250.251")
+INFLUX_PORT = int(os.getenv('INFLUX_PORT', "31886"))
+
+print(f"[INFO] MQTT Configuration: {MQTT_HOST}:{MQTT_PORT}")
+print(f"[INFO] InfluxDB Configuration: {INFLUX_HOST}:{INFLUX_PORT}")
 
 def get_field_types(measurement, influxdb_handle):
     field_types = {}
