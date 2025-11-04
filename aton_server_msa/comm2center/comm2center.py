@@ -17,8 +17,8 @@ MIOT_TEST_MODE = int(args.local)
 
 TOPIC = "comm2center/#"
 
-MQTT_HOST = "172.17.0.1"
-MQTT_PORT = 1883
+MQTT_HOST = os.getenv('MQTT_HOST', "mosquitto")
+MQTT_PORT = int(os.getenv('MQTT_PORT', "1883"))
 miot_args_json_path = "./miot_args.json"
    
 INFLUX_HOST = os.getenv('INFLUX_HOST', "106.247.250.251")
