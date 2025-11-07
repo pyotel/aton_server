@@ -12,7 +12,7 @@ services:
       - /etc/localtime:/etc/localtime
     privileged: true
     ports:
-      - "8086:8086"
+      - "31886:8086"
     environment:
       - INFLUXDB_DB=ketidb
       - INFLUXDB_ADMIN_USER=root
@@ -54,7 +54,7 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     ports:
-      - "5000:5000"
+      - "31020:5000"
     volumes: 
       - /etc/localtime:/etc/localtime
       - ./restfulapi/img:/app/img/
