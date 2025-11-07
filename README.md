@@ -6,6 +6,8 @@
 
 ATON Server는 항로표지 IoT 장비로부터 데이터를 수집하고 관리하는 시스템입니다. MQTT를 통한 실시간 데이터 수집과 InfluxDB를 이용한 시계열 데이터 저장, RESTful API를 통한 데이터 조회 및 관리 기능을 제공합니다.
 
+> **설정 정보**: IP 주소 및 포트 설정은 [IP_AND_PORT.md](IP_AND_PORT.md)를 참조하세요.
+
 ## 시스템 구조
 
 ```
@@ -19,7 +21,7 @@ aton_server_msa/
 ### 주요 컴포넌트
 
 1. **InfluxDB (1.8)** - 시계열 데이터베이스
-   - 포트: 8086
+   - 포트: 31886 (외부), 8086 (내부)
    - IoT 센서 데이터 저장 및 관리
 
 2. **Mosquitto** - MQTT 브로커
@@ -31,7 +33,7 @@ aton_server_msa/
    - Python 기반 서비스
 
 4. **RESTful API** - 웹 API 서버
-   - 포트: 5000
+   - 포트: 31020 (외부), 5000 (내부)
    - Flask 기반 REST API
    - 데이터 조회, 이미지 관리, MQTT 메시지 발행 등
 
@@ -64,8 +66,8 @@ docker-compose ps
 
 ## 서비스 엔드포인트
 
-- **RESTful API**: `http://localhost:5000`
-- **InfluxDB**: `http://localhost:8086`
+- **RESTful API**: `http://localhost:31020`
+- **InfluxDB**: `http://localhost:31886`
 - **MQTT Broker**: `mqtt://localhost:31883`
 
 ## 개발 환경
