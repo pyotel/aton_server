@@ -21,7 +21,7 @@ MQTT_HOST = os.getenv('MQTT_HOST', "mosquitto")
 MQTT_PORT = int(os.getenv('MQTT_PORT', "1883"))
 miot_args_json_path = "./miot_args.json"
    
-INFLUX_HOST = os.getenv('INFLUX_HOST', "106.247.250.251")
+INFLUX_HOST = os.getenv('INFLUX_HOST', "172.17.0.1")
 INFLUX_PORT = int(os.getenv('INFLUX_PORT', "31886"))
 
 print(f"[INFO] MQTT Configuration: {MQTT_HOST}:{MQTT_PORT}")

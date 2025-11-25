@@ -29,7 +29,7 @@ app = Flask(__name__)
 
 mqtt_client = mqtt.Client()
 mqtt_client.username_pw_set(username="keti", password="keti1234")
-mqtt_client.connect("106.247.250.251", 31883)
+mqtt_client.connect("172.17.0.1", 31883)
 
 # 이미지 디렉토리 경로 설정
 IMAGE_DIRECTORY = './img/'
@@ -259,7 +259,7 @@ def sim_start():
     return "null"
 
 
-INFLUX_HOST = "106.247.250.251"
+INFLUX_HOST = "172.17.0.1"
 INFLUX_PORT = 31886
 
 client = InfluxDBClient(INFLUX_HOST, INFLUX_PORT, 'root', 'keti1234', "sensors_data")
