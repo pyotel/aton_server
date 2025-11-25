@@ -45,6 +45,11 @@ services:
     depends_on:
       - influxdb
       - mosquitto
+    environment:
+      - MQTT_HOST=mosquitto
+      - MQTT_PORT=1883
+      - INFLUX_HOST=influxdb
+      - INFLUX_PORT=8086
     volumes:
       - /etc/localtime:/etc/localtime
 
@@ -53,8 +58,20 @@ services:
       context: ./restfulapi
       dockerfile: Dockerfile
     restart: unless-stopped
+    depends_on:
+      - influxdb
+      - mosquitto
     ports:
       - "31020:5000"
-    volumes: 
+    environment:
+      - MQTT_HOST=mosquitto
+      - MQTT_PORT=1883
+      - MQTT_USERNAME=${MOSQUITTO_USERNAME:-keti}
+      - MQTT_PASSWORD=${MOSQUITTO_PASSWORD:-keti1234}
+      - INFLUX_HOST=influxdb
+      - INFLUX_PORT=8086
+      - INFLUX_USERNAME=root
+      - INFLUX_PASSWORD=${INFLUX_ROOT_PASSWORD:-keti1234}
+    volumes:
       - /etc/localtime:/etc/localtime
       - ./restfulapi/img:/app/img/

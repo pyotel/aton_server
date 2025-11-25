@@ -27,9 +27,24 @@ import io
 
 app = Flask(__name__)
 
+# Environment variables for MQTT
+MQTT_HOST = os.getenv('MQTT_HOST', 'mosquitto')
+MQTT_PORT = int(os.getenv('MQTT_PORT', '1883'))
+MQTT_USERNAME = os.getenv('MQTT_USERNAME', 'keti')
+MQTT_PASSWORD = os.getenv('MQTT_PASSWORD', 'keti1234')
+
+# Environment variables for InfluxDB
+INFLUX_HOST = os.getenv('INFLUX_HOST', 'influxdb')
+INFLUX_PORT = int(os.getenv('INFLUX_PORT', '8086'))
+INFLUX_USERNAME = os.getenv('INFLUX_USERNAME', 'root')
+INFLUX_PASSWORD = os.getenv('INFLUX_PASSWORD', 'keti1234')
+
+print(f"[INFO] MQTT Configuration: {MQTT_HOST}:{MQTT_PORT}")
+print(f"[INFO] InfluxDB Configuration: {INFLUX_HOST}:{INFLUX_PORT}")
+
 mqtt_client = mqtt.Client()
-mqtt_client.username_pw_set(username="keti", password="keti1234")
-mqtt_client.connect("172.17.0.1", 31883)
+mqtt_client.username_pw_set(username=MQTT_USERNAME, password=MQTT_PASSWORD)
+mqtt_client.connect(MQTT_HOST, MQTT_PORT)
 
 # 이미지 디렉토리 경로 설정
 IMAGE_DIRECTORY = './img/'
@@ -72,7 +87,7 @@ def is_mostly_black(image, threshold=0.9):
 
 
 def camera_log_influxdb_write(dic_data : dict) :
-    influxdb_handle = InfluxDBClient(INFLUX_HOST, INFLUX_PORT, 'root', 'keti1234', "sensors_data")
+    influxdb_handle = InfluxDBClient(INFLUX_HOST, INFLUX_PORT, INFLUX_USERNAME, INFLUX_PASSWORD, "sensors_data")
     measurement = "log_camera"
     loc = dic_data.pop("region", "")
     dict_tags = {
@@ -259,10 +274,7 @@ def sim_start():
     return "null"
 
 
-INFLUX_HOST = "172.17.0.1"
-INFLUX_PORT = 31886
-
-client = InfluxDBClient(INFLUX_HOST, INFLUX_PORT, 'root', 'keti1234', "sensors_data")
+client = InfluxDBClient(INFLUX_HOST, INFLUX_PORT, INFLUX_USERNAME, INFLUX_PASSWORD, "sensors_data")
 
 @app.route('/csv')
 def csv():
@@ -302,7 +314,7 @@ def download_data():
     print(query)
     
     # InfluxDB 클라이언트 설정 (연결 설정 필요)
-    client = InfluxDBClient(INFLUX_HOST, INFLUX_PORT, 'root', 'keti1234', "sensors_data")
+    client = InfluxDBClient(INFLUX_HOST, INFLUX_PORT, INFLUX_USERNAME, INFLUX_PASSWORD, "sensors_data")
     
     # 쿼리 실행
     result = client.query(query)
