@@ -57,4 +57,4 @@ services:
       - "31020:5000"
     volumes: 
       - /etc/localtime:/etc/localtime
-      - ./restfulapi/img:/app/img/
+      - ${CAMERA_IMAGE_PATH}:/app/img/
